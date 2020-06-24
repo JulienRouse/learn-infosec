@@ -497,3 +497,50 @@ No user input should be used in include().
 Otherwise: whitelisting as strictly as possible without restricting fonctionality.
 
 If neither is viable, then removing directory separators may be the only route. This is _not_ recommended, but will prevent URLs and directory traversal.
+
+## [File Upload Bugs](https://www.youtube.com/watch?v=tkSmaMlSQ9E&list=PLxhvVyxYRviZd1oEA9nmnilY3PhVrt4nj&index=8)
+
+### Example of a upload request
+
+It's mostly a standard POST. The main difference lies in the header `Content-Type` `multipart/form-data`, and the `boundary` separators.
+
+### Filenames
+
+The most obvious way to break this is via the filename. If you see an uploaded file retain the original filename -- or a derivative -- chances are good that you can manipulate it. (_directory traversal_ for instance)
+
+### MIME Types
+
+Often the MIME Type is stored in a database, along with the uploaded filename and various metadata.
+
+If this is sent down with the file when it's accessed, this can allow exploits like XSS. For example, you could upload an HTML file disguised with an image filename, and send text/html as the MIME type.
+Upon access, the browser will parse it like normal.
+
+### Mitigation
+
+#### Separated domain
+
+In the vast majority of cases, files uploaded by users should be hosted on a separate domain. jthe reason fo this is that if you don't do that, same-origin policy comes into play, and it's possible for Javascript running in the context of the domain to manipulate the site, get cookies, etc.
+
+This does not solve any of the issues directly, but it does give you insurance if your other mitigations fail.
+
+#### Generated Filename
+
+Filenames should never come from a user directly. When you receive a file upload, a filename should be generated randomly (or via a hash of file contents + timestamp), with an extension based on MIME type or detected file type.
+
+Note that the extensions shoud be whitelisted. You don't want people uploading HTML or other malicious content.
+
+#### Type and Disposition
+
+If the uploaded files are not being served directly from the filesystem, then the issue becomes: what MIME type and content disposition do we use?
+
+The general rule is that MIME types should be whitelisted. If you want to allow types that are not on the list, the content disposition should be set to 'attachment'. That will force the browser to download the file, rather than display it.
+
+📝[MDN page](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition) on the `Content-Disposition` header
+
+#### Image Stripping
+
+If you're handling only images, then removing EXIF data from JPEGs, ancillary chunks from PNG files, and all other extraneous data is always a good idea.
+
+The reason is that you can embed HTML in those places, and even if today the browser wont load your images as HTML, that could change in the futur, so better be safe than sorry.
+
+## [Null Termination Bugs](https://www.youtube.com/watch?v=tkSmaMlSQ9E&list=PLxhvVyxYRviZd1oEA9nmnilY3PhVrt4nj&index=9)
