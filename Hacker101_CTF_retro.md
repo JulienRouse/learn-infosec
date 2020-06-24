@@ -158,4 +158,7 @@ That might indicates that an SQL injection is doable maybe?
 
 After trying with less characters, I found that with only the `'` char I can trigger this error.
 
-SELECT password FROM admins WHERE username=''
+In the video from Hacker101, they mentionned that `UNION` might be handy, so tried a bunch of query but with no success. After looking for some help, I found that there is a [writeup for this CTF](https://github.com/testerting/hacker101-ctf)
+
+It says they used `' UNION SELECT '123' AS password#` for the query to put into the login form.
+The missing part for me was the `#` at the end. It serves to comment the rest of the line, and that allows to control a bit more what goes into the query.
