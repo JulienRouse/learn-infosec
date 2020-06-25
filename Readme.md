@@ -29,3 +29,18 @@ I'll begin with the video from [hacker101](https://www.hacker101.com) aptly name
 - [DefCon YT](https://www.youtube.com/user/DEFCONConference)
 - [PenTesting cheatsheet](https://highon.coffee/blog/penetration-testing-tools-cheat-sheet/)
 - [TryHackMe! Basic penetration testing](https://www.youtube.com/watch?v=xl2Xx5YOKcI)
+
+## Certification recommandation
+
+- ## From [NetworkChuck feat The Cyber Mentor](https://www.youtube.com/watch?v=wIt_VAM4q-Y)
+  - [https://www.youtube.com/watch?v=lS9Eulfpffg&list=PLLKT\_\_MCUeiycd-\_VvfM1xI9t4uEV0g8i](https://www.elearnsecurity.com/course/penetration_testing/): most well rounded up certification. Teach you Active Directory hacking, very good for the education, but HR has no idea what this is.
+  - [OSCP](https://www.offensive-security.com/pwk-oscp/) 800-1300\$, 30-90days of lab time, you get a lot of practice (if you have the time). The exam is to hack 5 boxes. Downside is no methodologie for security, no wireless hacking.
+    200h, 5h/day for The Cyber Mentor
+    (~90-130K in USA for junior position)
+  - [SANS GPEN](https://www.giac.org/certification/penetration-tester-gpen) 7000\$ but very good if your employer pays it. It prepares very good.
+
+## HomeLab
+
+### AD
+
+- TODO [The Cyber Mentor Windows AD lab setup](https://www.youtube.com/watch?v=lS9Eulfpffg&list=PLLKT__MCUeiycd-_VvfM1xI9t4uEV0g8i)
