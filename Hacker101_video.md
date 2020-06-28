@@ -614,3 +614,218 @@ Salting is the process of adding a random value to the beginning and/or end of a
 When you do this, though, it's important not not have single global salt values for every hash.
 
 ## [Crypto Crash Course](https://www.youtube.com/watch?v=NTpzmPML42E&list=PLxhvVyxYRviZd1oEA9nmnilY3PhVrt4nj&index=12)
+
+### XOR
+
+Bitwise operator that performs this operation: given two bits (denoted A and B), it outputs a 1 if either A or B are 1, but not both.
+
+```
+0 ^ 0 == 0
+0 ^ 1 == 1
+1 ^ 0 == 1
+1 ^ 1 == 0
+```
+
+A property of XOR that is critically important for crypto: it can reverse itself.
+
+```
+Given D = A ^ B:
+A == D ^ B
+B == D ^ A
+```
+
+From this, we can produce a simple, perfect cryptography scheme:
+
+Generate a key of N bits of true random data. XOR each of the bits of the key with N bits of plaintext. You get a perfectly encrypted ciphertext blob of N bits. Decryption is just XORing ainst the same keystream.
+
+### One-Time pad
+
+This scheme is called a _one-time pad_. If you use a given key only once -- never repeating it, or using the same key for multiple messages -- it's absolutely perfect.
+That's the 'one-time' part of it. But obviously, we don't want to have to give out massive pre-generated keys that can only be used once! And that's why we don't use OTP for day-to-day operations.
+
+### Trillion Dollar Question
+
+Due to the fact that we don't really want to pass around massive keys to everyone we want to communicate securely with, the question becomes: how can we, with the highest assurance of safety and the least amount of time, hsare keys with all the relevant parties?
+
+The entire field of cryptography exists to answer that question. Then we poke holes in the answers.
+
+### Types of Ciphers
+
+We can break down the types of ciphers in use today into two families with their underlying subtypes, all with their own puprpose and flaws.
+
+- Symmetric -- Both sides share the same key
+  - Stream -- Encrypts data byte-by-byte
+  - Block -- Encrypts data block-by-block
+- Asymmetric -- Each side has their own private key and exchange public keys
+
+### Stream Ciphers
+
+Encrypt byte-by-byte. The most common one you'll see is RC4, which is often used in SSL.
+
+The basic construction is essentially a random number generator seeded with your key, which generates bytes that XORed with each byte of plaintext for encryption. Decryption is simply XORing the ciphertext instead. This means that both operations are identical.
+
+### Block Ciphers
+
+More familiar to most people. AES(Rijndael), DES, 3DES, Twofish, and other common ciphers are all block ciphers.
+
+In a block cipher, you split your data into N-byte blocks, and encrypt those separately. Because we can't assume that all data is a multiple of N-bytes long, we have to pad data, introducing complexity. In addition, the encryption and decryption processes are not the same.
+
+#### ECB Mode
+
+Electronic CodeBook mode is the simplest mode of operation for a block cipher. Each plaintext block is encrypted independently to produce a ciphertext block.
+
+This means that if you see two blocks with the same ciphertext, you know that they must have had the same plaintext. (_This is a problem in a lot of cases if I undertand correctly_)
+
+#### CBC Mode
+
+Cipher-Block Chaining is perhaps the most common form you will see. With CBC, each plaintext block is XORed with the ciphertext of the previous block before encryption; the opposite is performed for decryption.
+
+The first block is XORed with the Initialization Vector (IV)
+
+### Asymetric Cyphers
+
+Each party of the communication has a public and a private key. RSA is emplary of this class of ciphers.
+
+Asymmetric ciphers are used for both encryption and signing ( a process that allows one party to validate the source of a message)
+
+Generally, asymetric ciphers are not used for encrypting data directly (due to performance concerns and complexity). Rather, you use them to securely transmit a symmetric key.
+
+Alice wants to send a secure message to Bob. She can encrypt the message with a symmetric key, encrypt the key with Bob's public key, and then send the ciphertext and encrypted key to Bob. He then decrypts the key with his private key and uses that to decrypt the message.
+
+### Hashes
+
+Hashes are constructs that take in an arbitrary blob of data and generate a fixed-size output,generally 128-512bits. MD5, SHA1, SHA2 and others are all hash functions.
+
+Due to the fact that they take data of any size and produce a fixed-size output, all hash algorithms produce collisions -- multiple inputs that produce the same output. The strength of a hash algorithm is in how hard it is to find such collisions.
+
+In its own, a hash is only useful of determining the integrity of data. If you are given a blob of data and it's hash, it's trivially easy to determine if the data has been tampered with in transit.
+It does not, however, ensure that the hash itself is what was intended, nor does it authenticate a sender in any way.
+
+### MACs
+
+Message Authentication Codes are generally based on hases, but allow for -- as the name implies -- message authentication.
+
+What this means is that given a MAC, you can ensure that the data has not been tampered with, as well as validating that the MAC itself has not been manipulated.
+
+This is because with a MAC, you have a shared key that is used for construction and validation of the MAC. Without it, you cannot create a valid MAC.
+
+One example of MAC is HMAC
+
+## [Crypto Attacks](https://www.youtube.com/watch?v=jtcpREJLN1Y&list=PLxhvVyxYRviZd1oEA9nmnilY3PhVrt4nj&index=13)
+
+TO WATCH
+
+## [Crypto Wrap-up](https://www.youtube.com/watch?v=Zj6Z4QMzObE&list=PLxhvVyxYRviZd1oEA9nmnilY3PhVrt4nj&index=14)
+
+TO WATCH
+
+## [Threat Modeling](https://www.youtube.com/watch?v=6DI7RIXUTg8&list=PLxhvVyxYRviZd1oEA9nmnilY3PhVrt4nj&index=15)
+
+Threat modeling is a process by which you can determine what threats are important to an application and find points where defenses may be lacking. There are many different types of threat modeling, but we'll be going over two today.
+
+### Why?
+
+- Achieve better coverage in testing
+  - Make sure you're testing all the entrypoints
+- Find more interesting and valuable bugs
+  - Have a testing game plan before you start
+- Waste less time on dead ends
+  - Eliminate entire classes of vulnerabilities before you even start testing
+
+### Decomposition
+
+This is the first step of the typical threat modeling process. The modeler will document each component of the application and its infrastructure, then develp data flow diagrams that show how these components interact. Additionally, privilege boundaries are identified, to ensure that proper controls are in place for any data crossing these boundaries.
+
+### Threat Determination
+
+Next you develop threats for each portion of the application, e.g. 'Attacker may be able to access administration features.' You link each of these threats to the components that would be affected in the case of such an attack.
+
+Finally, you rank them by means of an objective measure of severity.
+
+### Countermeasures
+
+You then determine and document any countermeasures currently in place to prevent an attack, along with identifying new locations where countermeasures may be installed to prevent threats you have assessed.
+
+### Useless (for attackers)
+
+This is a valuable tool for developers and internal security teams. But this kind of heavy-weight threat modeling approach is completely unsuitable for bug bounty hunters and most software security consultants. It requires too much time, too much access to code and internal documentation, and does not give you a real plan for testing.
+
+### Lighweight threat modeling
+
+#### Enumerate Entrypoints
+
+First you make a list of every entrypoint you can find. One simple approach is to enable Burp Proxy and then use every function of the application which you can find, for every access level you have.
+
+#### Document Target Assets
+
+Think through and write down every asset in which an attacker may be interested, along with the business impact of its compromise:
+
+- User PII and passwords
+- Admin panel access
+- Transaction histories
+- Source code
+- Database credentials
+
+#### Game plan
+
+Once you have all that, you can rank the entrypoints in order of perceived value. For instance, any entrypoint which takes little to no user data will likely be less valuable that one which takes a substantial amount of data. Additionally, you have enough information to eliminate entire vulnerability classes from your tests (example: if it's a support knowledge base application, CSRF on any page for end-users will likely give you nothing)
+
+#### Example of threat modeling
+
+You can go to this page https://www.hacker101.com/resources/hackerone_threat_model to get the unauthenticated part of the Hacker One website.
+
+#### Restrict yourself
+
+Keep it under an hour
+
+## [Writing good reports](https://www.youtube.com/watch?v=z60CFFFyZWE&list=PLxhvVyxYRviZd1oEA9nmnilY3PhVrt4nj&index=16)
+
+### Why?
+
+Because if the client (or the company you work for) does not understand the technical job you have done, it's as if you did nothing.
+
+They need to be able to understand and reproduce what you've done.
+
+Your goal with a report should be to give the most useful information possible to the product team. This means they can triage and confirm your bug faster; this gets the money into your pocket even sooner.
+
+It also leads to fewer questions from the team, making everyone's lives easier.
+
+### Anatomy of a good report
+
+- Clear description of the bug
+- Real-worl impact
+- Concice reproduction steps
+- Working examples
+  - Proof of concepts links/payload
+  - Screenshots
+  - Source code snippets
+
+### Example of bad description
+
+'When submitting feedback, the titile tag value isn't escaped, allowing XSS attacks.'
+
+Problems:
+
+- Where does the title come from?
+- What privileges are required to execute this attack?
+- Which page(s) are actually affected?
+
+### Example of good description
+
+'Withing the administration panel of the site, administrators are able to set the default value for the `<title>` tag, to which page names are prepended. On the 'Submit Feedback' page (https://example.com/portal/feedback), this value is not escaped properly. This means that an attacker with administrative privileges can inject arbitrary HTML into a page, thus effecting a cross-site scripting attack.
+
+### Example of bad impact
+
+'Attacker can add any HTNL to a page, which is cross-site scripting'
+
+Problems:
+
+- What can an attacker accomplish with this?
+- Does 'a page' mean a specific page? Is so, which?
+- What does the attack flow look like in practice?
+
+### Example of good impact
+
+'An attacked is able to execute JavaScript in the context of the 'Submit Feedback' page. This code is able to perform any action that the victim could ordinarily perform (making posts and sendind messages). As this page is accessible to all users and is clicked commonly, this may allow an attacker to compromise a large number of users without any new interaction being forced'
+
+## [Getting started with Burp](https://www.youtube.com/watch?v=LSqC9qgEMi0&list=PLxhvVyxYRviZd1oEA9nmnilY3PhVrt4nj&index=17)
