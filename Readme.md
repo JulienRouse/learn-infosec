@@ -8,12 +8,14 @@ I'll begin with the video from [hacker101](https://www.hacker101.com) aptly name
 
 ## TODO
 
+- [trailofbits gitbook on appsec/pentesting](https://trailofbits.github.io/ctf/vulnerabilities/source.html)
 - [Notes on Web Security Academy](./WebSecurityAcademy.md) ⚠️ SPOILER ALERT ⚠️
 - [Notes on CTFLearn](./CTFLearn_retro.md) ⚠️ SPOILER ALERT ⚠️
 - [Penetration Testing in 15hours](https://www.youtube.com/watch?v=3Kq1MIfTWCE)
 - [MIT 63858 Computer Systems Security](https://www.youtube.com/playlist?list=PLUl4u3cNGP62K2DjQLRxDNRi0z2IRWnNh)
 - [LiveOverFlow](https://liveoverflow.com/start-hacking/)
 - [tryhackme](https://tryhackme.com/)
+- [Network Security 101](https://www.youtube.com/watch?v=E03gh1huvW4)
 
 ## Useful links
 
@@ -29,6 +31,8 @@ I'll begin with the video from [hacker101](https://www.hacker101.com) aptly name
 - [DefCon YT](https://www.youtube.com/user/DEFCONConference)
 - [PenTesting cheatsheet](https://highon.coffee/blog/penetration-testing-tools-cheat-sheet/)
 - [TryHackMe! Basic penetration testing](https://www.youtube.com/watch?v=xl2Xx5YOKcI)
+- [MontréHack](https://montrehack.ca/resources.html)
+- [MontréHack Twitch channel](https://www.twitch.tv/montrehack)
 
 ## Certification recommandation
 
@@ -44,3 +48,8 @@ I'll begin with the video from [hacker101](https://www.hacker101.com) aptly name
 ### AD
 
 - TODO [The Cyber Mentor Windows AD lab setup](https://www.youtube.com/watch?v=lS9Eulfpffg&list=PLLKT__MCUeiycd-_VvfM1xI9t4uEV0g8i)
+
+## Lockpicking
+
+- [Deviant Ollam YT](https://www.youtube.com/user/DeviantOllam)
+- [sparrowlockpicks](https://www.sparrowslockpicks.ca/product_p/nightschooltux.htm)

@@ -544,3 +544,73 @@ If you're handling only images, then removing EXIF data from JPEGs, ancillary ch
 The reason is that you can embed HTML in those places, and even if today the browser wont load your images as HTML, that could change in the futur, so better be safe than sorry.
 
 ## [Null Termination Bugs](https://www.youtube.com/watch?v=tkSmaMlSQ9E&list=PLxhvVyxYRviZd1oEA9nmnilY3PhVrt4nj&index=9)
+
+The null character (\x00, %00, etc) is used to terminate C strings. In fact, C strings are an array of char that are supposed to be ended with the null character. This can cause issue discussed here.
+
+While web application written in C are not common, Python, PHP, Ruby and others dynamic languages are written in C. This legacy comes in handy. (this video will pick mostly on PHP but it's not the only one that is vulnerable)
+
+### Example
+
+```php
+<?php
+include($_GET['page'] . '.php');
+?>
+```
+
+If we throw a null byte at the end of the page variable, it might only read up to that point when opening the file, allowing us to read any file we want.
+
+So we try `?page=/etc/passwd%00`, and we get a passwd file in the page.
+
+This is due to PHP using native C fuctions (as most runtimes do), and due to lack of proper string handling, this bug pops up all over the place.
+
+### Testing
+
+Strongly recommended to throw null bytes into anything related to file handling, particularly in the case of a PHP web application.
+
+Most browsers will strip %00 from requests or truncate them. Burp will allow you to embed literal nulls as well as URL encoded (%00) nulls.
+
+You'll find very interesting bugs if you do this regularly.
+
+## [Unchecked Redirects](https://www.youtube.com/watch?v=AEushmkXRpE&list=PLxhvVyxYRviZd1oEA9nmnilY3PhVrt4nj&index=10)
+
+An unchecked redirect is when a web application performs a redirect to an arbitrary URL outside the application.
+
+### Detecting
+
+Any time you see a redirect, look for the origin of the destination. Often, these will come from a user session in a way that is unexploitable. If, however, you find that it's comgin from the browser in an unsafe way -- for instance, as part of a CSRFable POST request -- you probably have an exploitable case.
+
+### Mitigation
+
+One way is to not allow protocol specification in the destination. That is, remove instances of `http://` and the like. This will mean that -- at worst -- a redirect can only cause a 404.
+
+A better way, is to construct the redirect destination entirely on the server from data the client sends.
+
+## [Secure Password Storage](https://www.youtube.com/watch?v=xZ5cxxllgP8&list=PLxhvVyxYRviZd1oEA9nmnilY3PhVrt4nj&index=11)
+
+Use BCrypt. That's it. Out of the box it offers every property you want, so you get very little chance to make a mistake.
+
+### Goals
+
+- Impervious to rainbow tables
+- Computationally expensive to avoir brute-forcing
+- Unique per-user, so that cracking one hash can't give you the password of mutiple users
+
+### Candidates
+
+Good candidate if BCrypt is not possible:
+
+- SCrypt is less battle-tested that BCrypt but is supposed to use lots of RAM to make it hard to parallelize.
+- PBKDF1 and 2 using per-user salt values with at least 10000 rounds
+- SHA256 using per-user salt values with at least 10000 rounds
+
+As a last resort:
+
+- MD5: good in general but too fast so too weak to brute-force
+
+### Salting
+
+Salting is the process of adding a random value to the beginning and/or end of a password, to make rainbow tables useless.
+
+When you do this, though, it's important not not have single global salt values for every hash.
+
+## [Crypto Crash Course](https://www.youtube.com/watch?v=NTpzmPML42E&list=PLxhvVyxYRviZd1oEA9nmnilY3PhVrt4nj&index=12)
